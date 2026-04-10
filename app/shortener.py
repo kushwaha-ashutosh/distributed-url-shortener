@@ -1,10 +1,10 @@
 import hashlib
 import string
-import random
 from datetime import datetime
 from app.database import get_db
 from app.cache import get_cached, set_cached
 from app.config import settings
+from app.consistent_hashing import ring, init_ring
 
 BASE62 = string.ascii_letters + string.digits
 
@@ -23,32 +23,35 @@ async def create_short_url(original_url: str, custom_alias: str = None):
     db = get_db()
     alias = custom_alias or generate_alias(original_url)
 
+    # Use consistent hashing to determine responsible node
+    responsible_node = ring.get_node(alias)
+
     existing = await db.urls.find_one({"alias": alias})
     if existing:
-        return alias
+        return alias, responsible_node
 
     record = {
         "alias": alias,
         "original_url": original_url,
         "clicks": 0,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.utcnow(),
+        "served_by": responsible_node
     }
     await db.urls.insert_one(record)
     await set_cached(alias, original_url)
-    return alias
+    return alias, responsible_node
 
 async def resolve_url(alias: str):
     # Cache-aside: check Redis first
     cached = await get_cached(alias)
     if cached:
-        return cached, True  # (url, cache_hit)
+        return cached, True, ring.get_node(alias)
 
     # Cache miss: go to MongoDB
     db = get_db()
     record = await db.urls.find_one({"alias": alias})
     if not record:
-        return None, False
+        return None, False, None
 
-    # Populate cache for next time
     await set_cached(alias, record["original_url"])
-    return record["original_url"], False
+    return record["original_url"], False, ring.get_node(alias)
