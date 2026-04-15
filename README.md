@@ -1,6 +1,6 @@
 # 🔗 Distributed URL Shortener
 
-> A production-grade URL shortener like bit.ly — handling **19.4M+ requests/day** with consistent hashing, Redis caching, and horizontal scaling. Every performance claim is backed by Locust load test data.
+> A URL shortener like bit.ly — designed using consistent hashing, Redis caching, and horizontal scaling for high availability and low-latency performance.
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.135-green)](https://fastapi.tiangolo.com)
@@ -9,21 +9,6 @@
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://docker.com)
 [![Nginx](https://img.shields.io/badge/Nginx-Load%20Balancer-orange)](https://nginx.org)
 
----
-
-## 📊 Performance Results (Locust Load Test)
-
-| Metric | Result |
-|--------|--------|
-| **Sustained throughput** | 225 req/s |
-| **Peak throughput** | 290 req/s |
-| **Daily capacity** | 19.4M requests/day |
-| **Failure rate** | 0.00% |
-| **Redirect p50 latency** | 10ms |
-| **Redirect p95 latency** | 94ms |
-| **Shorten p50 latency** | 64ms |
-| **Concurrent users tested** | 100 |
-| **Keys rerouted on node failure** | 16.6% (vs 100% naive) |
 
 ---
 
@@ -299,6 +284,22 @@ Shorten requests take ~64ms while health checks take ~9ms. Round-robin would pil
 - [ ] React frontend with live system status
 - [ ] Deploy to AWS ECS / GCP Cloud Run
 - [ ] Custom domain support
+
+---
+
+## 📊 Performance Results (Locust Load Test)
+
+| Metric | Result |
+|--------|--------|
+| **Sustained throughput** | 225 req/s |
+| **Peak throughput** | 290 req/s |
+| **Daily capacity** | 19.4M requests/day |
+| **Failure rate** | 0.00% |
+| **Redirect p50 latency** | 10ms |
+| **Redirect p95 latency** | 94ms |
+| **Shorten p50 latency** | 64ms |
+| **Concurrent users tested** | 100 |
+| **Keys rerouted on node failure** | 16.6% (vs 100% naive) |
 
 ---
 
